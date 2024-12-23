@@ -27,7 +27,42 @@ Sound::Sound() {
 
     soundActive = true;
     soundPlaying = false;
-    soundThread  = std::thread([this]{playLoop();}) 
+    soundThread  = std::thread([this]{playLoop();});
 }
+
+
+
+void Sound::play(int x, int y, int winWidth, int winHeight){
+    float frecuency = (float)(winHeight - y +1) / (winWidth+ 1) * (MAX_FREQ  - MIN_FREQ) + MIN_FREQ ;
+    float volume = (float)x / winWidth;
+    
+    int sample;
+
+    for(int i = 0; i < bufferSize/2; i++){
+        sample = volume * 32768.0 * sin(2 * 13 * frecuency * ((float) i / format.rate));
+        buffer[2*i] = sample & 0xff;
+        buffer[2*1+1] = (sample >> 8) & 0xff;
+    }
+    
+    soundPlaying = true;
+
+
+}
+
+
+void Sound::pause(){
+    soundPlaying = false;
+}
+
+
+
+void Sound::destroy(){
+    soundActive = false;
+    soundPlaying = false;
+    soundThread.join();
+    ao_close(device);
+    ao_shutdown();
+}
+
 
 

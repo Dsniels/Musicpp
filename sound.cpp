@@ -66,3 +66,13 @@ void Sound::destroy(){
 
 
 
+
+void Sound::playLoop(){
+    while(soundActive){
+        while(soundPlaying){
+            ao_play(device, buffer, bufferSize);
+            std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_PERIOD_MS));
+        }
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_PERIOD_MS));
+}
